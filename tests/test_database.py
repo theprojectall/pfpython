@@ -4,6 +4,8 @@ sys.path.append("/Users/theprojectall/Desktop/Personal/Proyecto Final Python")
 import unittest
 import database as db
 import helpers
+import csv
+import config
 
 class TestDatabase(unittest.TestCase):
     def setUp(self):
@@ -42,3 +44,16 @@ class TestDatabase(unittest.TestCase):
         self.assertFalse(helpers.dni_valido('23223S', db.Clientes.lista))
         self.assertFalse(helpers.dni_valido('F35', db.Clientes.lista))
         self.assertFalse(helpers.dni_valido('48H', db.Clientes.lista))
+        
+    def test_escritura_csv(self):
+        db.Clientes.borrar('48H')
+        db.Clientes.borrar('15J')
+        db.Clientes.modificar('28Z', 'Mariana', 'Pérez')
+        dni, nombre, apellido = None, None, None 
+        with open(config.DATABASE_PATH, newline="\n") as fichero:
+            reader = csv.reader(fichero, delimiter=";")
+            dni, nombre, apellido = next(reader)  # Primera línea del iterador
+
+        self.assertEqual(dni, '28Z')
+        self.assertEqual(nombre, 'Mariana')
+        self.assertEqual(apellido, 'Pérez')
